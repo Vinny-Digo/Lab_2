@@ -1,16 +1,24 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+import re
+import requests
+import unittest
+from unittest.mock import patch
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+#Функция поиска IPv4 через URL с Regex`ом
+def URL_Regex(url):
+    response = requests.get(url)
+    if response.status_code == 200:
+        tables = re.findall(r'<table\sclass="wp-block-table my-ip-table">.*?<\/table>',
+                            response.text, flags=re.DOTALL)
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+        addresses = re.findall(r'\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9]?[0-9])\b',
+                               tables[0], flags=re.DOTALL)
+        return addresses
+
+    else:
+        print(f'Ошибка HTTP: {response.status_code}')
+        return None
+
+#Пример работы с URL-запросом
+'''for adr in URL_Regex('https://itarticle.ru/ipv4-ipv6-network-tables/'):
+    print(adr)'''
